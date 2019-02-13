@@ -19,7 +19,7 @@ scala> val claim = JwtClaim(
      |   expiration = Some(Instant.now().plusSeconds(157784760).getEpochSecond),
      |   issuedAt = Some(Instant.now.getEpochSecond)
      | )
-claim: pdi.jwt.JwtClaim = JwtClaim({},None,None,None,Some(1704857252),None,Some(1547072492),None)
+claim: pdi.jwt.JwtClaim = JwtClaim({},None,None,None,Some(1707805012),None,Some(1550020252),None)
 
 scala> val key = "secretKey"
 key: String = secretKey
@@ -28,13 +28,13 @@ scala> val alg = JwtAlgorithm.HS512
 alg: pdi.jwt.JwtAlgorithm.HS512.type = HS512
 
 scala> val token = JwtArgonaut.encode(claim, key, alg)
-token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3MDQ4NTcyNTIsImlhdCI6MTU0NzA3MjQ5Mn0.NjczR7SDVkavCRGjNHwGtmTkK7qvdJ_jw05V5rIr6c2KlleYpakdpZ4n3NofKC51ybZ5hN0peGuIZdJ4NJWm7w
+token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3MDc4MDUwMTIsImlhdCI6MTU1MDAyMDI1Mn0.GBCRp1pbZIVk2-gQ1xc8o525x5qOXjco3Ls-A78lr6PUtSE1h2cyj-_PJtNLMy40h3O_qKg0HF84Wp9hVCIwbA
 
 scala> val decodedJson: Try[Json] = JwtArgonaut.decodeJson(token, key, Seq(alg))
-decodedJson: scala.util.Try[argonaut.Json] = Success({"exp":1704857252,"iat":1547072492})
+decodedJson: scala.util.Try[argonaut.Json] = Success({"exp":1707805012,"iat":1550020252})
 
 scala> val decodedClaim: Try[JwtClaim] = JwtArgonaut.decode(token, key, Seq(alg))
-decodedClaim: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({},None,None,None,Some(1704857252),None,Some(1547072492),None))
+decodedClaim: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({},None,None,None,Some(1707805012),None,Some(1550020252),None))
 ```
 
 ### Encoding
@@ -53,19 +53,19 @@ scala> val alg = JwtAlgorithm.HS512
 alg: pdi.jwt.JwtAlgorithm.HS512.type = HS512
 
 scala> val jsonClaim = Parse.parseOption(s"""{"expires":${Instant.now().getEpochSecond}}""").get
-jsonClaim: argonaut.Json = {"expires":1547072493}
+jsonClaim: argonaut.Json = {"expires":1550020253}
 
 scala> val jsonHeader = Parse.parseOption("""{"typ":"JWT","alg":"HS512"}""").get
 jsonHeader: argonaut.Json = {"typ":"JWT","alg":"HS512"}
 
 scala> val token1: String = JwtArgonaut.encode(jsonClaim)
-token1: String = eyJhbGciOiJub25lIn0.eyJleHBpcmVzIjoxNTQ3MDcyNDkzfQ.
+token1: String = eyJhbGciOiJub25lIn0.eyJleHBpcmVzIjoxNTUwMDIwMjUzfQ.
 
 scala> val token2: String = JwtArgonaut.encode(jsonClaim, key, alg)
-token2: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHBpcmVzIjoxNTQ3MDcyNDkzfQ.d3Q9uPHS3mXEuDhCPg19uAGf9h9vJyeBBD3PfUvvCHBZ9gETjIEpziuey4w-zAYe-1TNGroathYmXmErUWEgtA
+token2: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHBpcmVzIjoxNTUwMDIwMjUzfQ.Cyfex8d0TmOjJluQGgNKD5PtJ_exQ-SWJyVU6Sp2qgMf0cYsRhskX-pZV4_90W7Jr3GylLcpQXICey6K2b15TA
 
 scala> val token3: String = JwtArgonaut.encode(jsonHeader, jsonClaim, key)
-token3: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHBpcmVzIjoxNTQ3MDcyNDkzfQ.d3Q9uPHS3mXEuDhCPg19uAGf9h9vJyeBBD3PfUvvCHBZ9gETjIEpziuey4w-zAYe-1TNGroathYmXmErUWEgtA
+token3: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHBpcmVzIjoxNTUwMDIwMjUzfQ.Cyfex8d0TmOjJluQGgNKD5PtJ_exQ-SWJyVU6Sp2qgMf0cYsRhskX-pZV4_90W7Jr3GylLcpQXICey6K2b15TA
 ```
 
 ### Decoding
@@ -84,7 +84,7 @@ scala> val claim = JwtClaim(
      |   expiration = Some(Instant.now.plusSeconds(157784760).getEpochSecond),
      |   issuedAt = Some(Instant.now.getEpochSecond)
      | )
-claim: pdi.jwt.JwtClaim = JwtClaim({},None,None,None,Some(1704857254),None,Some(1547072494),None)
+claim: pdi.jwt.JwtClaim = JwtClaim({},None,None,None,Some(1707805013),None,Some(1550020253),None)
 
 scala> val key = "secretKey"
 key: String = secretKey
@@ -93,17 +93,17 @@ scala> val alg = JwtAlgorithm.HS512
 alg: pdi.jwt.JwtAlgorithm.HS512.type = HS512
 
 scala> val token = JwtArgonaut.encode(claim, key, alg)
-token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3MDQ4NTcyNTQsImlhdCI6MTU0NzA3MjQ5NH0.aGhR_jKRM_Pn16MhcSHL5-8HdnRR6pLEI505kUkUV4VvoCnzxNwvT-oIe-fp18thIrxg1zUoF1x3m3U_saOa8Q
+token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3MDc4MDUwMTMsImlhdCI6MTU1MDAyMDI1M30.uVyYwfdEnn4RZvDqD2drmsf4kbybzkCkRQezwZ5ruf20HSsZ5cMt7GbUHs0kl70dqyx1eUw04D8ekIXTmk2mnQ
 
 scala> val decodedJsonClaim: Try[Json] = JwtArgonaut.decodeJson(token, key, Seq(alg))
-decodedJsonClaim: scala.util.Try[argonaut.Json] = Success({"exp":1704857254,"iat":1547072494})
+decodedJsonClaim: scala.util.Try[argonaut.Json] = Success({"exp":1707805013,"iat":1550020253})
 
 scala> val decodedJson: Try[(Json, Json, String)] = JwtArgonaut.decodeJsonAll(token, key, Seq(alg))
-decodedJson: scala.util.Try[(argonaut.Json, argonaut.Json, String)] = Success(({"typ":"JWT","alg":"HS512"},{"exp":1704857254,"iat":1547072494},aGhR_jKRM_Pn16MhcSHL5-8HdnRR6pLEI505kUkUV4VvoCnzxNwvT-oIe-fp18thIrxg1zUoF1x3m3U_saOa8Q))
+decodedJson: scala.util.Try[(argonaut.Json, argonaut.Json, String)] = Success(({"typ":"JWT","alg":"HS512"},{"exp":1707805013,"iat":1550020253},uVyYwfdEnn4RZvDqD2drmsf4kbybzkCkRQezwZ5ruf20HSsZ5cMt7GbUHs0kl70dqyx1eUw04D8ekIXTmk2mnQ))
 
 scala> val decodedClaim: Try[JwtClaim]  = JwtArgonaut.decode(token, key, Seq(alg))
-decodedClaim: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({},None,None,None,Some(1704857254),None,Some(1547072494),None))
+decodedClaim: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({},None,None,None,Some(1707805013),None,Some(1550020253),None))
 
 scala> val decodedToken: Try[(JwtHeader, JwtClaim, String)] = JwtArgonaut.decodeAll(token, key, Seq(alg))
-decodedToken: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((JwtHeader(Some(HS512),Some(JWT),None,None),JwtClaim({},None,None,None,Some(1704857254),None,Some(1547072494),None),aGhR_jKRM_Pn16MhcSHL5-8HdnRR6pLEI505kUkUV4VvoCnzxNwvT-oIe-fp18thIrxg1zUoF1x3m3U_saOa8Q))
+decodedToken: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((JwtHeader(Some(HS512),Some(JWT),None,None),JwtClaim({},None,None,None,Some(1707805013),None,Some(1550020253),None),uVyYwfdEnn4RZvDqD2drmsf4kbybzkCkRQezwZ5ruf20HSsZ5cMt7GbUHs0kl70dqyx1eUw04D8ekIXTmk2mnQ))
 ```

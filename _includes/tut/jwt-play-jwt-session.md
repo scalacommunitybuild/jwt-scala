@@ -8,50 +8,57 @@ Provides an API similar to the Play [Session](https://www.playframework.com/docu
 scala> import pdi.jwt.JwtSession
 import pdi.jwt.JwtSession
 
+scala> import play.api.Configuration
+import play.api.Configuration
+
+scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
+     | implicit val conf:Configuration = Configuration.reference
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+
 scala> // Let's create a session, it will automatically assign a default header. No
      | // In your app, the default header would be generated from "application.conf" file
      | // but here, it will just use the default values (which are all empty)
      | var session = JwtSession()
-session: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{},)
 
 scala> // We can add a (key, value)
      | session = session + ("user", 1)
-session: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":1},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"user":1},)
 
 scala> // Or several of them
      | session = session ++ (("nbf", 1431520421), ("key", "value"), ("key2", 2), ("key3", 3))
-session: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":1,"nbf":1431520421,"key":"value","key2":2,"key3":3},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"key2":2,"nbf":1431520421,"key3":3,"user":1,"key":"value"},)
 
 scala> // Also remove a key
      | session = session - "key"
-session: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":1,"nbf":1431520421,"key2":2,"key3":3},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"nbf":1431520421,"key2":2,"user":1,"key3":3},)
 
 scala> // Or several
      | session = session -- ("key2", "key3")
-session: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":1,"nbf":1431520421},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"nbf":1431520421,"user":1},)
 
 scala> // We can access a specific key
      | session.get("user")
-res8: Option[play.api.libs.json.JsValue] = Some(1)
+res9: Option[play.api.libs.json.JsValue] = Some(1)
 
 scala> // Test if the session is empty or not
      | // (it is not here since we have several keys in the claimData)
      | session.isEmpty
-res11: Boolean = false
+res12: Boolean = false
 
 scala> // Serializing the session is the same as encoding it as a JSON Web Token
      | val token = session.serialize
-token: String = eyJhbGciOiJub25lIn0.eyJ1c2VyIjoxLCJuYmYiOjE0MzE1MjA0MjF9.
+token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0MzE1MjA0MjEsInVzZXIiOjF9.0nOuCxfVTiJEOwB99ruZ0a5iP5HumhG5xu0ccKoonSM
 
 scala> // You can create a JwtSession from a token of course
      | JwtSession.deserialize(token)
-res14: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":1,"nbf":1431520421},)
+res15: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"nbf":1431520421,"user":1},0nOuCxfVTiJEOwB99ruZ0a5iP5HumhG5xu0ccKoonSM)
 
 scala> // You could refresh the session to set its expiration in a few seconds from now
      | // but you need to set "session.maxAge" in your "application.conf" and since this
      | // is not a real Play application, we cannot do that, so here, the refresh will do nothing.
      | session = session.refresh
-session: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":1,"nbf":1431520421},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"nbf":1431520421,"user":1},)
 ```
 
 ### Using implicits
@@ -66,19 +73,26 @@ import play.api.libs.json.Json
 scala> import play.api.libs.functional.syntax._
 import play.api.libs.functional.syntax._
 
+scala> import play.api.Configuration
+import play.api.Configuration
+
+scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
+     | implicit val conf:Configuration = Configuration.reference
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+
 scala> case class User(id: Long, name: String)
 defined class User
 
 scala> implicit val formatUser = Json.format[User]
-formatUser: play.api.libs.json.OFormat[User] = play.api.libs.json.OFormat$$anon$1@2144ac46
+formatUser: play.api.libs.json.OFormat[User] = play.api.libs.json.OFormat$$anon$3@5b7a77b8
 
 scala> // Next, adding it to a new session
      | val session2 = JwtSession() + ("user", User(42, "Paul"))
-session2: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":{"id":42,"name":"Paul"}},)
+session2: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"user":{"id":42,"name":"Paul"}},)
 
 scala> // Finally, accessing it
      | session2.getAs[User]("user")
-res21: Option[User] = Some(User(42,Paul))
+res23: Option[User] = Some(User(42,Paul))
 ```
 
 ## Play RequestHeader
@@ -95,9 +109,16 @@ import pdi.jwt.JwtSession._
 scala> import play.api.test.{FakeRequest, FakeHeaders}
 import play.api.test.{FakeRequest, FakeHeaders}
 
+scala> import play.api.Configuration
+import play.api.Configuration
+
+scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
+     | implicit val conf:Configuration = Configuration.reference
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+
 scala> // Default JwtSession
      | FakeRequest().jwtSession
-res23: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{},)
+res26: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{},)
 
 scala> // What about some headers?
      | // (the default header for a JSON Web Token is "Authorization" and it should be prefixed by "Bearer ")
@@ -105,12 +126,12 @@ scala> // What about some headers?
 request: play.api.test.FakeRequest[play.api.mvc.AnyContentAsEmpty.type] = GET /
 
 scala> request.jwtSession
-res26: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":{"id":42,"name":"Paul"}},)
+res29: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"user":{"id":42,"name":"Paul"}},P8vGvJMv8aTU8vxiP5b1U-IHjZpFpGid46UEMszKW2I)
 
 scala> // It means you can directly read case classes from the session!
      | // And that's pretty cool
      | request.jwtSession.getAs[User]("user")
-res29: Option[User] = Some(User(42,Paul))
+res32: Option[User] = Some(User(42,Paul))
 ```
 
 ## Play Result
@@ -120,7 +141,14 @@ There are also implicit helpers around `Result` to help you manipulate the sessi
 ```scala
 scala> // Several functions will need an implicit RequestHeader
      | // since this is the only way to read the headers of the Result
-     | implicit val implRequest = request
+     | import play.api.Configuration
+import play.api.Configuration
+
+scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
+     | implicit val conf:Configuration = Configuration.reference
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+
+scala> implicit val implRequest = request
 implRequest: play.api.test.FakeRequest[play.api.mvc.AnyContentAsEmpty.type] = GET /
 
 scala> // Let's begin by creating a Result
@@ -129,43 +157,43 @@ result: play.api.mvc.Result = Result(200, Map())
 
 scala> // We can already get a JwtSession from our implicit RequestHeader
      | result.jwtSession
-res34: pdi.jwt.JwtSession = JwtSession({"alg":"none"},{"user":{"id":42,"name":"Paul"}},)
+res38: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"user":{"id":42,"name":"Paul"}},P8vGvJMv8aTU8vxiP5b1U-IHjZpFpGid46UEMszKW2I)
 
 scala> // Setting a new empty JwtSession
      | result = result.withNewJwtSession
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.e30.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.e30.pXJUVs71mK5D5WyxqBOYu8VwAXTl7Qhe4z9j2Hnhqsc))
 
 scala> // Or from an existing JwtSession
      | result = result.withJwtSession(session2)
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJ1c2VyIjp7ImlkIjo0MiwibmFtZSI6IlBhdWwifX0.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImlkIjo0MiwibmFtZSI6IlBhdWwifX0.P8vGvJMv8aTU8vxiP5b1U-IHjZpFpGid46UEMszKW2I))
 
 scala> // Or from a JsObject
      | result = result.withJwtSession(Json.obj(("id", 1), ("key", "value")))
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJpZCI6MSwia2V5IjoidmFsdWUifQ.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwia2V5IjoidmFsdWUifQ.m53lWQ3050LjjgtnQdH1yfilLz3UKlKZigYM0D52yGo))
 
 scala> // Or from (key, value)
      | result = result.withJwtSession(("id", 1), ("key", "value"))
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJpZCI6MSwia2V5IjoidmFsdWUifQ.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwia2V5IjoidmFsdWUifQ.m53lWQ3050LjjgtnQdH1yfilLz3UKlKZigYM0D52yGo))
 
 scala> // We can add stuff to the current session (only (String, String))
      | result = result.addingToJwtSession(("key2", "value2"), ("key3", "value3"))
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJpZCI6MSwia2V5IjoidmFsdWUiLCJrZXkyIjoidmFsdWUyIiwia2V5MyI6InZhbHVlMyJ9.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkyIjoidmFsdWUyIiwia2V5MyI6InZhbHVlMyIsImlkIjoxLCJrZXkiOiJ2YWx1ZSJ9._Lm6eCCUuIH_3ZPDP9jljR5iOjHI6LXEn7I9gTuXubk))
 
 scala> // Or directly classes or objects if you have the correct implicit Writes
      | result = result.addingToJwtSession("user", User(1, "Paul"))
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJpZCI6MSwia2V5IjoidmFsdWUiLCJrZXkyIjoidmFsdWUyIiwia2V5MyI6InZhbHVlMyIsInVzZXIiOnsiaWQiOjEsIm5hbWUiOiJQYXVsIn19.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkyIjoidmFsdWUyIiwia2V5MyI6InZhbHVlMyIsImlkIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9LCJrZXkiOiJ2YWx1ZSJ9.kB42tDpHBArdpurZ2hhXH1wbINsxOWRaaAjpQShbq8M))
 
 scala> // Removing from session
      | result = result.removingFromJwtSession("key2", "key3")
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJpZCI6MSwia2V5IjoidmFsdWUiLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9fQ.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJ2YWx1ZSIsImlkIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9fQ.pRsIrBkUBGP7NXHHDwcQUbdgyt7wS_DJ2uj9VTrnMSc))
 
 scala> // Refresh the current session
      | result = result.refreshJwtSession
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJhbGciOiJub25lIn0.eyJpZCI6MSwia2V5IjoidmFsdWUiLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9fQ.))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJ2YWx1ZSIsImlkIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9fQ.pRsIrBkUBGP7NXHHDwcQUbdgyt7wS_DJ2uj9VTrnMSc))
 
 scala> // So, at the end, you can do
      | result.jwtSession.getAs[User]("user")
-res44: Option[User] = Some(User(1,Paul))
+res48: Option[User] = Some(User(1,Paul))
 ```
 
 ## Play configuration
