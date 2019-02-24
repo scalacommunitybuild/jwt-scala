@@ -28,7 +28,7 @@ scala> // create a parser with claim type set to the one you just defined
      |     val claimJson = super.parse(claim)
      |     val jwtReservedClaim: JwtClaim = super.readClaim(claimJson)
      |     val content = super.parse(jwtReservedClaim.content)
-     |     JwtPrivateClaim(super.extractString(content, "user"), jwtReservedClaim.copy(content = "{}"))
+     |     JwtPrivateClaim(super.extractString(content, "user"), jwtReservedClaim.withContent("{}"))
      |   }
      | 
      |   // here is the only boilerplate (but if you chose to also specify a custom header type then you would make use of this)
@@ -52,5 +52,5 @@ scala> // this example chose to use JwtJson4s, but any Json implementation would
 token: String = eyJhbGciOiJub25lIn0.eyJ1c2VyIjoic29tZW9uZSIsICJpc3MiOiAibWUifQ.
 
 scala> val decoded: Try[(JwtHeader, JwtPrivateClaim, String)] = JwtJson4sPrivate.decodeAll(token)
-decoded: scala.util.Try[(pdi.jwt.JwtHeader, JwtPrivateClaim, String)] = Success((JwtHeader(None,None,None,None),JwtPrivateClaim(Some(someone),JwtClaim({},Some(me),None,None,None,None,None,None)),))
+decoded: scala.util.Try[(pdi.jwt.JwtHeader, JwtPrivateClaim, String)] = Success((pdi.jwt.JwtHeader@71da1600,JwtPrivateClaim(Some(someone),pdi.jwt.JwtClaim@f360dccd),))
 ```

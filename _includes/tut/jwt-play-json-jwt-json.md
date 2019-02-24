@@ -28,7 +28,7 @@ scala> JwtJson.decodeJson(token, key, Seq(JwtAlgorithm.HS256))
 res1: scala.util.Try[play.api.libs.json.JsObject] = Success({"user":1,"nbf":1431520421})
 
 scala> JwtJson.decode(token, key, Seq(JwtAlgorithm.HS256))
-res2: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None))
+res2: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@1d288770)
 ```
 
 ### Encoding
@@ -60,10 +60,10 @@ res9: scala.util.Try[(play.api.libs.json.JsObject, play.api.libs.json.JsObject, 
 
 scala> // Or to case classes
      | JwtJson.decode(token, key, Seq(JwtAlgorithm.HS256))
-res11: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None))
+res11: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@1d288770)
 
 scala> JwtJson.decodeAll(token, key, Seq(JwtAlgorithm.HS256))
-res12: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((JwtHeader(Some(HS256),Some(JWT),None,None),JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None),VmfmoqRbRvna9lfpCx4lXf96eD_X_woBM0twLjBGLlQ))
+res12: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((pdi.jwt.JwtHeader@ac020068,pdi.jwt.JwtClaim@1d288770,VmfmoqRbRvna9lfpCx4lXf96eD_X_woBM0twLjBGLlQ))
 ```
 
 ### Formating
@@ -79,22 +79,22 @@ import pdi.jwt.JwtJson._
 
 scala> // Reads
      | Json.fromJson[JwtHeader](header)
-res14: play.api.libs.json.JsResult[pdi.jwt.JwtHeader] = JsSuccess(JwtHeader(Some(HS256),Some(JWT),None,None),)
+res14: play.api.libs.json.JsResult[pdi.jwt.JwtHeader] = JsSuccess(pdi.jwt.JwtHeader@ac020068,)
 
 scala> Json.fromJson[JwtClaim](claim)
-res15: play.api.libs.json.JsResult[pdi.jwt.JwtClaim] = JsSuccess(JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None),)
+res15: play.api.libs.json.JsResult[pdi.jwt.JwtClaim] = JsSuccess(pdi.jwt.JwtClaim@1d288770,)
 
 scala> // Writes
      | Json.toJson(JwtHeader(JwtAlgorithm.HS256))
 res17: play.api.libs.json.JsValue = {"typ":"JWT","alg":"HS256"}
 
 scala> Json.toJson(JwtClaim("""{"user":1}""").issuedNow.expiresIn(10))
-res18: play.api.libs.json.JsValue = {"exp":1550020268,"iat":1550020258,"user":1}
+res18: play.api.libs.json.JsValue = {"exp":1551004385,"iat":1551004375,"user":1}
 
 scala> // Or
      | JwtHeader(JwtAlgorithm.HS256).toJsValue
 res20: play.api.libs.json.JsValue = {"typ":"JWT","alg":"HS256"}
 
 scala> JwtClaim("""{"user":1}""").issuedNow.expiresIn(10).toJsValue
-res21: play.api.libs.json.JsValue = {"exp":1550020268,"iat":1550020258,"user":1}
+res21: play.api.libs.json.JsValue = {"exp":1551004385,"iat":1551004375,"user":1}
 ```

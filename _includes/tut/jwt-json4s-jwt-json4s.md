@@ -28,7 +28,7 @@ scala> JwtJson4s.decodeJson(token, key, Seq(JwtAlgorithm.HS256))
 res1: scala.util.Try[org.json4s.JObject] = Success(JObject(List((user,JInt(1)), (nbf,JInt(1431520421)))))
 
 scala> JwtJson4s.decode(token, key, Seq(JwtAlgorithm.HS256))
-res2: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None))
+res2: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@1d288770)
 ```
 
 ### Encoding
@@ -59,8 +59,8 @@ res8: scala.util.Try[(org.json4s.JObject, org.json4s.JObject, String)] = Success
 
 scala> // Or to case classes
      | JwtJson4s.decode(token, key, Seq(JwtAlgorithm.HS256))
-res10: scala.util.Try[pdi.jwt.JwtClaim] = Success(JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None))
+res10: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@1d288770)
 
 scala> JwtJson4s.decodeAll(token, key, Seq(JwtAlgorithm.HS256))
-res11: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((JwtHeader(Some(HS256),Some(JWT),None,None),JwtClaim({"user":1},None,None,None,None,Some(1431520421),None,None),VmfmoqRbRvna9lfpCx4lXf96eD_X_woBM0twLjBGLlQ))
+res11: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((pdi.jwt.JwtHeader@ac020068,pdi.jwt.JwtClaim@1d288770,VmfmoqRbRvna9lfpCx4lXf96eD_X_woBM0twLjBGLlQ))
 ```
