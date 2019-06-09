@@ -3,11 +3,17 @@
 ### Basic usage
 
 ```scala
+scala> import java.time.Clock
+import java.time.Clock
+
 scala> import pdi.jwt.{JwtJson, JwtAlgorithm}
 import pdi.jwt.{JwtJson, JwtAlgorithm}
 
 scala> import play.api.libs.json.Json
 import play.api.libs.json.Json
+
+scala> implicit val clock: Clock = Clock.systemUTC
+clock: java.time.Clock = SystemClock[Z]
 
 scala> val claim = Json.obj(("user", 1), ("nbf", 1431520421))
 claim: play.api.libs.json.JsObject = {"user":1,"nbf":1431520421}
@@ -89,12 +95,12 @@ scala> // Writes
 res17: play.api.libs.json.JsValue = {"typ":"JWT","alg":"HS256"}
 
 scala> Json.toJson(JwtClaim("""{"user":1}""").issuedNow.expiresIn(10))
-res18: play.api.libs.json.JsValue = {"exp":1551004385,"iat":1551004375,"user":1}
+res18: play.api.libs.json.JsValue = {"exp":1560094664,"iat":1560094654,"user":1}
 
 scala> // Or
      | JwtHeader(JwtAlgorithm.HS256).toJsValue
 res20: play.api.libs.json.JsValue = {"typ":"JWT","alg":"HS256"}
 
 scala> JwtClaim("""{"user":1}""").issuedNow.expiresIn(10).toJsValue
-res21: play.api.libs.json.JsValue = {"exp":1551004385,"iat":1551004375,"user":1}
+res21: play.api.libs.json.JsValue = {"exp":1560094664,"iat":1560094654,"user":1}
 ```

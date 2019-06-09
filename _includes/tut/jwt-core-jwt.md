@@ -3,8 +3,14 @@
 ### Basic usage
 
 ```scala
+scala> import java.time.Clock
+import java.time.Clock
+
 scala> import pdi.jwt.{Jwt, JwtAlgorithm, JwtHeader, JwtClaim, JwtOptions}
 import pdi.jwt.{Jwt, JwtAlgorithm, JwtHeader, JwtClaim, JwtOptions}
+
+scala> implicit val clock: Clock = Clock.systemUTC
+clock: java.time.Clock = SystemClock[Z]
 
 scala> val token = Jwt.encode("""{"user":1}""", "secretKey", JwtAlgorithm.HS256)
 token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoxfQ.oG3iKnAvj_OKCv0tchT90sv2IFVeaREgvJmwgRcXfkI
@@ -26,7 +32,7 @@ res3: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzM4NCJ9.eyJ1c2VyIjoxfQ.Do0PQWccbp1J7
 scala> // Encode from case class, header automatically generated
      | // Set that the token has been issued now and expires in 10 seconds
      | Jwt.encode(JwtClaim({"""{"user":1}"""}).issuedNow.expiresIn(10), "secretKey", JwtAlgorithm.HS512)
-res6: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE1NTEwMDQzODEsImlhdCI6MTU1MTAwNDM3MSwidXNlciI6MX0.eKRnl5-kg-kSZCfSFY3TKb16LBlWRgjmoK6TB-P9SjZM_BPqCjdfY_2Y6pHxJZOKY_6gSTM-Qah1cQDySJg2Iw
+res6: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJleHAiOjE1NjAwOTQ2NjAsImlhdCI6MTU2MDA5NDY1MCwidXNlciI6MX0.2xBz2Dj_xMb2XL09Yu_jkQztywD5QeNxetJyRywG5JdkDQbhO0q8q3qrS1AfxpZA83dD0-W1vmiOLFYwuC4Svw
 
 scala> // You can encode without signing it
      | Jwt.encode("""{"user":1}""")
@@ -62,28 +68,28 @@ scala> // Decode all parts and cast them as a better type if possible.
      | // Since the implementation in JWT Core only use string, it is the same as decodeRawAll
      | // But check the result in JWT Play JSON to see the difference
      | Jwt.decodeAll(token, "secretKey", Seq(JwtAlgorithm.HS256))
-res22: scala.util.Try[(String, String, String)] = Success(({"typ":"JWT","alg":"HS256"},{"user":1},oG3iKnAvj_OKCv0tchT90sv2IFVeaREgvJmwgRcXfkI))
+res22: scala.util.Try[(pdi.jwt.JwtHeader, pdi.jwt.JwtClaim, String)] = Success((pdi.jwt.JwtHeader@ac020068,pdi.jwt.JwtClaim@a0b74282,oG3iKnAvj_OKCv0tchT90sv2IFVeaREgvJmwgRcXfkI))
 
 scala> // Same as before, but only the claim
      | // (you should start to see a pattern in the naming convention of the functions)
      | Jwt.decode(token, "secretKey", Seq(JwtAlgorithm.HS256))
-res25: scala.util.Try[String] = Success({"user":1})
+res25: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@a0b74282)
 
 scala> // Failure because the token is not a token at all
      | Jwt.decode("Hey there!")
-res27: scala.util.Try[String] = Failure(pdi.jwt.exceptions.JwtLengthException: Expected token [Hey there!] to be composed of 2 or 3 parts separated by dots.)
+res27: scala.util.Try[pdi.jwt.JwtClaim] = Failure(pdi.jwt.exceptions.JwtLengthException: Expected token [Hey there!] to be composed of 2 or 3 parts separated by dots.)
 
 scala> // Failure if not Base64 encoded
      | Jwt.decode("a.b.c")
-res29: scala.util.Try[String] = Failure(java.lang.IllegalArgumentException: Input byte[] should at least have 2 bytes for base64 bytes)
+res29: scala.util.Try[pdi.jwt.JwtClaim] = Failure(java.lang.IllegalArgumentException: Input byte[] should at least have 2 bytes for base64 bytes)
 
 scala> // Failure in case we use the wrong key
      | Jwt.decode(token, "wrongKey", Seq(JwtAlgorithm.HS256))
-res31: scala.util.Try[String] = Failure(pdi.jwt.exceptions.JwtValidationException: Invalid signature for this token or wrong algorithm.)
+res31: scala.util.Try[pdi.jwt.JwtClaim] = Failure(pdi.jwt.exceptions.JwtValidationException: Invalid signature for this token or wrong algorithm.)
 
 scala> // Failure if the token only starts in 5 seconds
      | Jwt.decode(Jwt.encode(JwtClaim().startsIn(5)))
-res33: scala.util.Try[String] = Failure(pdi.jwt.exceptions.JwtNotBeforeException: The token will only be valid after 2019-02-24T10:32:57Z)
+res33: scala.util.Try[pdi.jwt.JwtClaim] = Failure(pdi.jwt.exceptions.JwtNotBeforeException: The token will only be valid after 2019-06-09T15:37:35Z)
 ```
 
 ### Validating
@@ -100,19 +106,19 @@ res36: Boolean = true
 scala> // Wrong key here
      | Jwt.validate(token, "wrongKey", Seq(JwtAlgorithm.HS256))
 pdi.jwt.exceptions.JwtValidationException: Invalid signature for this token or wrong algorithm.
-  at pdi.jwt.JwtCore.validate(Jwt.scala:637)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:620)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:645)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:644)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:704)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:702)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:707)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:707)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  ... 248 elided
+  at pdi.jwt.JwtCore.validate(Jwt.scala:606)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:589)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:614)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:613)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:673)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:671)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:676)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:676)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  ... 252 elided
 
 scala> Jwt.isValid(token, "wrongKey", Seq(JwtAlgorithm.HS256))
 res39: Boolean = false
@@ -126,38 +132,38 @@ res42: Boolean = true
 scala> // No key while the token is actually signed => wrong
      | Jwt.validate(token)
 pdi.jwt.exceptions.JwtNonEmptySignatureException: Non-empty signature found inside the token while trying to verify without a key.
-  at pdi.jwt.JwtCore.validate(Jwt.scala:611)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:609)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:686)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:684)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:689)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:689)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  ... 264 elided
+  at pdi.jwt.JwtCore.validate(Jwt.scala:580)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:578)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:655)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:653)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:658)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:658)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  ... 268 elided
 
 scala> Jwt.isValid(token)
 res45: Boolean = false
 
 scala> // The token hasn't started yet!
      | Jwt.validate(Jwt.encode(JwtClaim().startsIn(5)))
-pdi.jwt.exceptions.JwtNotBeforeException: The token will only be valid after 2019-02-24T10:32:58Z
+pdi.jwt.exceptions.JwtNotBeforeException: The token will only be valid after 2019-06-09T15:37:36Z
   at pdi.jwt.JwtTime$.validateNowIsBetween(JwtTime.scala:57)
   at pdi.jwt.JwtTime$.validateNowIsBetweenSeconds(JwtTime.scala:73)
-  at pdi.jwt.JwtCore.validateTiming(Jwt.scala:594)
-  at pdi.jwt.JwtCore.validateTiming$(Jwt.scala:585)
-  at pdi.jwt.Jwt$.validateTiming(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:616)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:609)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:686)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:684)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:689)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:689)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  ... 272 elided
+  at pdi.jwt.JwtCore.validateTiming(Jwt.scala:561)
+  at pdi.jwt.JwtCore.validateTiming$(Jwt.scala:554)
+  at pdi.jwt.Jwt$.validateTiming(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:585)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:578)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:655)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:653)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:658)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:658)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  ... 276 elided
 
 scala> Jwt.isValid(Jwt.encode(JwtClaim().startsIn(5)))
 res48: Boolean = false
@@ -165,19 +171,19 @@ res48: Boolean = false
 scala> // This is no token
      | Jwt.validate("a.b.c")
 java.lang.IllegalArgumentException: Input byte[] should at least have 2 bytes for base64 bytes
-  at java.base/java.util.Base64$Decoder.outLength(Base64.java:659)
-  at java.base/java.util.Base64$Decoder.decode(Base64.java:525)
+  at java.base/java.util.Base64$Decoder.outLength(Base64.java:668)
+  at java.base/java.util.Base64$Decoder.decode(Base64.java:534)
   at pdi.jwt.JwtBase64$.decode(JwtBase64.scala:9)
   at pdi.jwt.JwtBase64$.decodeString(JwtBase64.scala:17)
   at pdi.jwt.JwtBase64$.decodeString(JwtBase64.scala:20)
-  at pdi.jwt.JwtCore.splitToken(Jwt.scala:220)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:685)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:684)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  at pdi.jwt.JwtCore.validate(Jwt.scala:689)
-  at pdi.jwt.JwtCore.validate$(Jwt.scala:689)
-  at pdi.jwt.Jwt$.validate(Jwt.scala:23)
-  ... 280 elided
+  at pdi.jwt.JwtCore.splitToken(Jwt.scala:193)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:654)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:653)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  at pdi.jwt.JwtCore.validate(Jwt.scala:658)
+  at pdi.jwt.JwtCore.validate$(Jwt.scala:658)
+  at pdi.jwt.Jwt$.validate(JwtPureScala.scala:19)
+  ... 284 elided
 
 scala> Jwt.isValid("a.b.c")
 res51: Boolean = false
@@ -189,21 +195,21 @@ All validating and decoding methods support a final optional argument as a `JwtO
 
 ```scala
 scala> val expiredToken = Jwt.encode(JwtClaim().by("me").expiresIn(-1));
-expiredToken: String = eyJhbGciOiJub25lIn0.eyJpc3MiOiJtZSIsImV4cCI6MTU1MTAwNDM3Mn0.
+expiredToken: String = eyJhbGciOiJub25lIn0.eyJpc3MiOiJtZSIsImV4cCI6MTU2MDA5NDY1MX0.
 
 scala> // Fail since the token is expired
      | Jwt.isValid(expiredToken)
 res53: Boolean = false
 
 scala> Jwt.decode(expiredToken)
-res54: scala.util.Try[String] = Failure(pdi.jwt.exceptions.JwtExpirationException: The token is expired since 2019-02-24T10:32:52Z)
+res54: scala.util.Try[pdi.jwt.JwtClaim] = Failure(pdi.jwt.exceptions.JwtExpirationException: The token is expired since 2019-06-09T15:37:31Z)
 
 scala> // Let's disable expiration check
      | Jwt.isValid(expiredToken, JwtOptions(expiration = false))
 res56: Boolean = true
 
 scala> Jwt.decode(expiredToken, JwtOptions(expiration = false))
-res57: scala.util.Try[String] = Success({"iss":"me","exp":1551004372})
+res57: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@e36b9a2f)
 ```
 
 You can also specify a leeway, in seconds, to account for clock skew.
@@ -214,5 +220,5 @@ scala> // Allow 30sec leeway
 res59: Boolean = true
 
 scala> Jwt.decode(expiredToken, JwtOptions(leeway = 30))
-res60: scala.util.Try[String] = Success({"iss":"me","exp":1551004372})
+res60: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@e36b9a2f)
 ```

@@ -5,11 +5,17 @@ Provides an API similar to the Play [Session](https://www.playframework.com/docu
 ### Basic usage
 
 ```scala
+scala> import java.time.Clock
+import java.time.Clock
+
 scala> import pdi.jwt.JwtSession
 import pdi.jwt.JwtSession
 
 scala> import play.api.Configuration
 import play.api.Configuration
+
+scala> implicit val clock: Clock = Clock.systemUTC
+clock: java.time.Clock = SystemClock[Z]
 
 scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
      | implicit val conf:Configuration = Configuration.reference
@@ -84,7 +90,7 @@ scala> case class User(id: Long, name: String)
 defined class User
 
 scala> implicit val formatUser = Json.format[User]
-formatUser: play.api.libs.json.OFormat[User] = play.api.libs.json.OFormat$$anon$3@c57a1fc
+formatUser: play.api.libs.json.OFormat[User] = play.api.libs.json.OFormat$$anon$3@1350dd42
 
 scala> // Next, adding it to a new session
      | val session2 = JwtSession() + ("user", User(42, "Paul"))

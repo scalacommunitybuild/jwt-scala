@@ -1,11 +1,17 @@
-## JwtClaim Case Class
+## JwtClaim Class
 
 ```scala
+scala> import java.time.Clock
+import java.time.Clock
+
 scala> import pdi.jwt.JwtClaim
 import pdi.jwt.JwtClaim
 
 scala> JwtClaim()
 res0: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@97c880b6
+
+scala> implicit val clock: Clock = Clock.systemUTC
+clock: java.time.Clock = SystemClock[Z]
 
 scala> // Specify the content as JSON string
      | // (don't use var in your code if possible, this is just to ease the sample)
@@ -46,7 +52,7 @@ claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@b5d231f8
 scala> // Set the expiration
      | // In 10 seconds from now
      | claim = claim.expiresIn(5)
-claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@ea81efb
+claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@11fa9588
 
 scala> // At a specific timestamp (in seconds)
      | claim.expiresAt(1431520421)
@@ -54,34 +60,34 @@ res14: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@c7898aca
 
 scala> // Right now! (the token is directly invalid...)
      | claim.expiresNow
-res16: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@e0c8d795
+res16: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@e8ee39ae
 
 scala> // Set the beginning of the token (aka the "not before" attribute)
      | // 5 seconds ago
      | claim.startsIn(-5)
-res19: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@4f5d6b9
+res19: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@be3ff49e
 
 scala> // At a specific timestamp (in seconds)
      | claim.startsAt(1431520421)
-res21: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@8b1963e9
+res21: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@8e6bda76
 
 scala> // Right now!
      | claim = claim.startsNow
-claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@83a7d1be
+claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@a003bf12
 
 scala> // Set the date when the token was created
      | // (you should always use claim.issuedNow, but I let you do otherwise if needed)
      | // 5 seconds ago
      | claim.issuedIn(-5)
-res26: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@39052a40
+res26: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@8ab253c
 
 scala> // At a specific timestamp (in seconds)
      | claim.issuedAt(1431520421)
-res28: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@66a33710
+res28: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@82ff2464
 
 scala> // Right now!
      | claim = claim.issuedNow
-claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@24553a9b
+claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@33fe0a4a
 
 scala> // We can test if the claim is valid => testing if the current time is between "not before" and "expiration"
      | claim.isValid
@@ -93,5 +99,5 @@ res33: Boolean = true
 
 scala> // Let's stringify the final version
      | claim.toJson
-res35: String = {"iss":"Me","sub":"Something","aud":["You"],"exp":1551004391,"nbf":1551004386,"iat":1551004386,"jti":"42","user":1,"key1":"value1","key2":true,"key3":3,"key4":[1,2],"key5":{"key5.1":"Subkey"}}
+res35: String = {"iss":"Me","sub":"Something","aud":["You"],"exp":1560094670,"nbf":1560094665,"iat":1560094666,"jti":"42","user":1,"key1":"value1","key2":true,"key3":3,"key4":[1,2],"key5":{"key5.1":"Subkey"}}
 ```
