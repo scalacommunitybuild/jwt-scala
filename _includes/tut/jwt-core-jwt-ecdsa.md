@@ -19,7 +19,7 @@ import pdi.jwt.{Jwt, JwtAlgorithm}
 
 scala> // We specify the curve we want to use
      | val ecGenSpec = new ECGenParameterSpec("P-521")
-ecGenSpec: java.security.spec.ECGenParameterSpec = java.security.spec.ECGenParameterSpec@19157f11
+ecGenSpec: java.security.spec.ECGenParameterSpec = java.security.spec.ECGenParameterSpec@c9814f1
 
 scala> // We are going to use a ECDSA algorithm
      | // and the Bouncy Castle provider
@@ -29,21 +29,21 @@ scala> // We are going to use a ECDSA algorithm
 res3: AnyVal = 13
 
 scala> val generatorEC = KeyPairGenerator.getInstance("ECDSA", "BC")
-generatorEC: java.security.KeyPairGenerator = org.bouncycastle.jcajce.provider.asymmetric.ec.KeyPairGeneratorSpi$ECDSA@17e3493e
+generatorEC: java.security.KeyPairGenerator = org.bouncycastle.jcajce.provider.asymmetric.ec.KeyPairGeneratorSpi$ECDSA@79db68ae
 
 scala> generatorEC.initialize(ecGenSpec, new SecureRandom())
 
 scala> // Generate a pair of keys, one private for encoding
      | // and one public for decoding
      | val ecKey = generatorEC.generateKeyPair()
-ecKey: java.security.KeyPair = java.security.KeyPair@c0504fb
+ecKey: java.security.KeyPair = java.security.KeyPair@1f6b6090
 ```
 
 #### Usage
 
 ```scala
 scala> val token = Jwt.encode("""{"user":1}""", ecKey.getPrivate, JwtAlgorithm.ES512)
-token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJ1c2VyIjoxfQ.AdHQbixqwOe6BISibmN_YsdQv5N3vX13n0VZWrVNJ_7bD4MiHrjB_omVvW_cLpo6_1L-4pFJXYd3nz5pAtDMqX5GAQWOYYdNh4aH2t11JLJY0Gb7BpXE2ujCP65rHSGmJS2JS5a6fz5sdtVXZ_mr3avDHzWYz9RBnFVJtKOyI47zla6D
+token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJ1c2VyIjoxfQ.AMgoSgouFDO6uGPIexqvaybKVzA9Xv6Asd-W3TPA1V42u8fxzf7gwi2JZpy6x2zoq_-gbujMPn4dAg_2tKCmZeTxAD5s6H5OLYnXFay1HmXCa2lcfosRn3HosyKOZ-Da42MOMuu29IAx2Jwwy-LXCfTPczclpfdWnX-cq6Hp5o_yHbu6
 
 scala> Jwt.decode(token, ecKey.getPublic, JwtAlgorithm.allECDSA)
 res7: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@a0b74282)
@@ -78,13 +78,13 @@ scala> // Here we are using the P-521 curve but you need to change it
 curveParams: org.bouncycastle.jce.spec.ECNamedCurveParameterSpec = org.bouncycastle.jce.spec.ECNamedCurveParameterSpec@1b739184
 
 scala> val curveSpec: ECParameterSpec = new ECNamedCurveSpec( "P-521", curveParams.getCurve(), curveParams.getG(), curveParams.getN(), curveParams.getH());
-curveSpec: java.security.spec.ECParameterSpec = org.bouncycastle.jce.spec.ECNamedCurveSpec@773f37dc
+curveSpec: java.security.spec.ECParameterSpec = org.bouncycastle.jce.spec.ECNamedCurveSpec@cf6a0c0
 
 scala> val privateSpec = new ECPrivateKeySpec(S.underlying(), curveSpec)
-privateSpec: java.security.spec.ECPrivateKeySpec = java.security.spec.ECPrivateKeySpec@dd2b9a1
+privateSpec: java.security.spec.ECPrivateKeySpec = java.security.spec.ECPrivateKeySpec@29fa11c3
 
 scala> val publicSpec = new ECPublicKeySpec(new ECPoint(X.underlying(), Y.underlying()), curveSpec)
-publicSpec: java.security.spec.ECPublicKeySpec = java.security.spec.ECPublicKeySpec@dbb547d
+publicSpec: java.security.spec.ECPublicKeySpec = java.security.spec.ECPublicKeySpec@3e9aad2f
 
 scala> val privateKeyEC = KeyFactory.getInstance("ECDSA", "BC").generatePrivate(privateSpec)
 privateKeyEC: java.security.PrivateKey =
@@ -103,7 +103,7 @@ EC Public Key [49:0d:6b:80:40:bf:32:e7:8a:ed:e7:35:23:41:e0:43:c0:b3:66:95]
 
 ```scala
 scala> val token = Jwt.encode("""{"user":1}""", privateKeyEC, JwtAlgorithm.ES512)
-token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJ1c2VyIjoxfQ.APe2FXq0zbX6K8mEVl8JA3n1JK_xoCVQPJvHsmK0MJ8p_qeEU355uPlPZOZwUtwoAv4EwqFBstNLAQaqOyXHCrqgAcp6YZfv781ZF_mpkjjRE_Nfo39zj1ifhsY9QIbFH21Kmqks7e1lZkJhFR6cA9Gys9Nf2-0q0s2U3CEkc6KhOFBJ
+token: String = eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzUxMiJ9.eyJ1c2VyIjoxfQ.AETEZ4Uf31QU3W1RlI_Lbzm5Hvzs5F32Q2jEZXf7do0OG9SFzcpUenpAOAYgr7zskaZrSbO1eSr9q_nIjAalkG8cADqbvQO3qczWFG1bnFnAhbVb12z05uCmysCQIkYMonrVXx88lM1WTftyZOM4cNVjIs54RO7wiGftO-VFuMzpbW-x
 
 scala> Jwt.decode(token, publicKeyEC, Seq(JwtAlgorithm.ES512))
 res11: scala.util.Try[pdi.jwt.JwtClaim] = Success(pdi.jwt.JwtClaim@a0b74282)
