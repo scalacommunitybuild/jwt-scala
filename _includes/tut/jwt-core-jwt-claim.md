@@ -52,7 +52,7 @@ claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@b5d231f8
 scala> // Set the expiration
      | // In 10 seconds from now
      | claim = claim.expiresIn(5)
-claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@9593f1e3
+claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@728969c9
 
 scala> // At a specific timestamp (in seconds)
      | claim.expiresAt(1431520421)
@@ -60,34 +60,34 @@ res14: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@c7898aca
 
 scala> // Right now! (the token is directly invalid...)
      | claim.expiresNow
-res16: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@3523af8b
+res16: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@7cb7f9c3
 
 scala> // Set the beginning of the token (aka the "not before" attribute)
      | // 5 seconds ago
      | claim.startsIn(-5)
-res19: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@aa6881af
+res19: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@b003fcd3
 
 scala> // At a specific timestamp (in seconds)
      | claim.startsAt(1431520421)
-res21: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@120536d1
+res21: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@eefaaeb7
 
 scala> // Right now!
      | claim = claim.startsNow
-claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@6822f5f0
+claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@8135fc9e
 
 scala> // Set the date when the token was created
      | // (you should always use claim.issuedNow, but I let you do otherwise if needed)
      | // 5 seconds ago
      | claim.issuedIn(-5)
-res26: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@89d73ca4
+res26: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@9bf7e054
 
 scala> // At a specific timestamp (in seconds)
      | claim.issuedAt(1431520421)
-res28: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@4b1e5b42
+res28: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@643161f0
 
 scala> // Right now!
      | claim = claim.issuedNow
-claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@eaccbc43
+claim: pdi.jwt.JwtClaim = pdi.jwt.JwtClaim@89f13b29
 
 scala> // We can test if the claim is valid => testing if the current time is between "not before" and "expiration"
      | claim.isValid
@@ -99,5 +99,5 @@ res33: Boolean = true
 
 scala> // Let's stringify the final version
      | claim.toJson
-res35: String = {"iss":"Me","sub":"Something","aud":"You","exp":1566242743,"nbf":1566242738,"iat":1566242738,"jti":"42","user":1,"key1":"value1","key2":true,"key3":3,"key4":[1,2],"key5":{"key5.1":"Subkey"}}
+res35: String = {"iss":"Me","sub":"Something","aud":"You","exp":1566245125,"nbf":1566245120,"iat":1566245120,"jti":"42","user":1,"key1":"value1","key2":true,"key3":3,"key4":[1,2],"key5":{"key5.1":"Subkey"}}
 ```
