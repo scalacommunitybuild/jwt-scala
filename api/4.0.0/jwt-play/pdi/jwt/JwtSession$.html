@@ -238,11 +238,14 @@ the <a href="JwtSession.html" class="extype" name="pdi.jwt.JwtSession">JwtSessio
 the <a href="JwtSession.html" class="extype" name="pdi.jwt.JwtSession">JwtSession</a> inside your Play application.</p><div class="fullcomment"><div class="comment cmt"><p>By adding <code>import pdi.jwt._</code>, you will implicitely add all those methods to <code>Result</code> allowing you to easily manipulate
 the <a href="JwtSession.html" class="extype" name="pdi.jwt.JwtSession">JwtSession</a> inside your Play application.</p><pre><span class="kw">package</span> controllers
 
+<span class="kw">import</span> java.time.Clock
 <span class="kw">import</span> play.api._
 <span class="kw">import</span> play.api.mvc._
 <span class="kw">import</span> pdi.jwt._
 
 <span class="kw">object</span> Application <span class="kw">extends</span> Controller {
+  <span class="kw">implicit</span> <span class="kw">val</span> clock: Clock = Clock.systemUTC
+
   <span class="kw">def</span> login = Action { <span class="kw">implicit</span> request <span class="kw">=&gt;</span>
     Ok.addingToJwtSession((<span class="lit">"logged"</span>, <span class="kw">true</span>))
   }
