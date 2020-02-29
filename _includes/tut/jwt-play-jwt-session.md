@@ -19,7 +19,7 @@ clock: java.time.Clock = SystemClock[Z]
 
 scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
      | implicit val conf:Configuration = Configuration.reference
-conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"allow-java-serialization":"off","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.ThrowOnOverflowRejectionHandler","task-...
 
 scala> // Let's create a session, it will automatically assign a default header. No
      | // In your app, the default header would be generated from "application.conf" file
@@ -37,7 +37,7 @@ session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"key2":2,"
 
 scala> // Also remove a key
      | session = session - "key"
-session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"nbf":1431520421,"key2":2,"user":1,"key3":3},)
+session: pdi.jwt.JwtSession = JwtSession({"typ":"JWT","alg":"HS256"},{"key2":2,"nbf":1431520421,"key3":3,"user":1},)
 
 scala> // Or several
      | session = session -- ("key2", "key3")
@@ -84,13 +84,13 @@ import play.api.Configuration
 
 scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
      | implicit val conf:Configuration = Configuration.reference
-conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"allow-java-serialization":"off","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.ThrowOnOverflowRejectionHandler","task-...
 
 scala> case class User(id: Long, name: String)
 defined class User
 
 scala> implicit val formatUser = Json.format[User]
-formatUser: play.api.libs.json.OFormat[User] = play.api.libs.json.OFormat$$anon$3@31405628
+formatUser: play.api.libs.json.OFormat[User] = play.api.libs.json.OFormat$$anon$3@75e7a4ee
 
 scala> // Next, adding it to a new session
      | val session2 = JwtSession() + ("user", User(42, "Paul"))
@@ -120,7 +120,7 @@ import play.api.Configuration
 
 scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
      | implicit val conf:Configuration = Configuration.reference
-conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"allow-java-serialization":"off","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.ThrowOnOverflowRejectionHandler","task-...
 
 scala> // Default JwtSession
      | FakeRequest().jwtSession
@@ -152,7 +152,7 @@ import play.api.Configuration
 
 scala> //In a real Play! App this should normally be injected in the constructor with @Inject()
      | implicit val conf:Configuration = Configuration.reference
-conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"additional-serialization-bindings":{},"allow-java-serialization":"on","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.T...
+conf: play.api.Configuration = Configuration(Config(SimpleConfigObject({"akka":{"actor":{"allow-java-serialization":"off","creation-timeout":"20s","debug":{"autoreceive":"off","event-stream":"off","fsm":"off","lifecycle":"off","receive":"off","router-misconfiguration":"off","unhandled":"off"},"default-blocking-io-dispatcher":{"executor":"thread-pool-executor","thread-pool-executor":{"fixed-pool-size":16},"throughput":1,"type":"Dispatcher"},"default-dispatcher":{"affinity-pool-executor":{"fair-work-distribution":{"threshold":128},"idle-cpu-level":5,"parallelism-factor":0.8,"parallelism-max":64,"parallelism-min":4,"queue-selector":"akka.dispatch.affinity.FairDistributionHashCache","rejection-handler":"akka.dispatch.affinity.ThrowOnOverflowRejectionHandler","task-...
 
 scala> implicit val implRequest = request
 implRequest: play.api.test.FakeRequest[play.api.mvc.AnyContentAsEmpty.type] = GET /
@@ -191,11 +191,11 @@ result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOi
 
 scala> // Removing from session
      | result = result.removingFromJwtSession("key2", "key3")
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJ2YWx1ZSIsImlkIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9fQ.pRsIrBkUBGP7NXHHDwcQUbdgyt7wS_DJ2uj9VTrnMSc))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlciI6eyJpZCI6MSwibmFtZSI6IlBhdWwifSwia2V5IjoidmFsdWUifQ.z9IQk9hNgtfolWlIxvgZ45Hcp94N32hGAPhw8CW_29w))
 
 scala> // Refresh the current session
      | result = result.refreshJwtSession
-result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOiJ2YWx1ZSIsImlkIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUGF1bCJ9fQ.pRsIrBkUBGP7NXHHDwcQUbdgyt7wS_DJ2uj9VTrnMSc))
+result: play.api.mvc.Result = Result(200, Map(Authorization -> Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlciI6eyJpZCI6MSwibmFtZSI6IlBhdWwifSwia2V5IjoidmFsdWUifQ.z9IQk9hNgtfolWlIxvgZ45Hcp94N32hGAPhw8CW_29w))
 
 scala> // So, at the end, you can do
      | result.jwtSession.getAs[User]("user")
@@ -212,6 +212,24 @@ res48: Option[User] = Some(User(1,Paul))
 
 The secret key is used to secure cryptographics functions. We are using the same key to sign Json Web Tokens so you don't need to worry about it.
 
+### Private key
+
+`play.http.session.privateKey`
+
+> Default: none
+
+The PKCS8 format private key is used to sign JWT session. If `play.http.session.privateKey` is missing `play.http.secret.key` used instead.
+
+
+### Public key
+
+`play.http.session.publicKey`
+
+> Default: none
+
+The X.509 format public key is used to verify JWT session signed with private key `play.http.session.privateKey`
+
+
 ### Session timeout
 
 `play.http.session.maxAge`
@@ -226,7 +244,7 @@ Just like for the cookie session, you can use this key to specify the duration, 
 
 > Default: HS256
 >
-> Supported: HMD5, HS1, HS224, HS256, HS384, HS512
+> Supported: HMD5, HS1, HS224, HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512
 
 You can specify which algorithm you want to use, among the supported ones, in order to create the signature which will assure you that nobody can actually change the token. You should probably stick with the default one or use HmacSHA512 for maximum security.
 
